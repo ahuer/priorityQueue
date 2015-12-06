@@ -2,10 +2,14 @@ package com.points.topfive;
 
 public class Words implements Comparable<Words> {
  	
-	private final String text;
+	private String text;
 	private int frequency;
 	
 	public Words (String text, int frequency) {
+		if (frequency < 0 ) {
+			frequency = 0;
+		}
+		
 		this.text = text;
 		this.frequency = frequency;
 	}
@@ -33,9 +37,4 @@ public class Words implements Comparable<Words> {
 		return 0;
 	}
 	
-	@Override
-	public String toString() {
-		return "Text: " + text + " - Freq: " + frequency;
-	}
-
 }

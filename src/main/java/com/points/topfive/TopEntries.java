@@ -9,6 +9,10 @@ public class TopEntries {
 	private PriorityQueue<Words> topEntries;
 	
 	public TopEntries (PriorityQueue<Words> topEntries, int maxTopEntries) {
+		if (maxTopEntries <= 0 ) {
+			maxTopEntries = 1;
+		}
+		
 		this.topEntries = topEntries;
 		MAX_TOP_ENTRIES = maxTopEntries;
 		
@@ -40,15 +44,8 @@ public class TopEntries {
 		return topEntries;				
 	}
 	
-	public String getTopEntriesString() {
-		if (topEntries.isEmpty()) {
-			return (new Words[0]).toString();
-		}
-		return ((Words[]) topEntries.toArray()).toString();				
+	public int getMaxTopEntries() {
+		return MAX_TOP_ENTRIES;
 	}
-	
-	
-	
-	
 
 }

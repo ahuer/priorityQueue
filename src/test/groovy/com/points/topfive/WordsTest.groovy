@@ -8,6 +8,12 @@ import com.points.topfive.Words
 class WordsTest {
 	
 	@Test
+	public void testFreqLessThanZero() {
+		def pizza = new Words("pizza", -1)
+		assertEquals(0, pizza.getFrequency())
+	}
+	
+	@Test
 	public void testCompareToGreaterThan() {
 		def pizza = new Words("pizza", 7)
 		def apple = new Words("apple", 14)
@@ -30,11 +36,5 @@ class WordsTest {
 		
 		assertEquals(0, apple.compareTo(pizza))
 	}
-	
-	@Test
-	public void testToStringOnArrayOfWords() {
-		def wordList = [new Words("aaa", 11), new Words("bbb", 22)]
-		
-		assertEquals("[Text: aaa - Freq: 11, Text: bbb - Freq: 22]", wordList.toString())
-	}
+
 }
