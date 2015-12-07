@@ -53,6 +53,14 @@ class FileReadingTest {
 	@Test
 	public void testSumWordTotalsFromFiles() {
 		def topEntryQueue = new TopEntries(new PriorityQueue(), 3)
-		assertEquals(false, reader.sumWordTotalsFromFiles(1, outputFilePath, topEntryQueue))
+		assertEquals(true, reader.sumWordTotalsFromFiles(1, outputFilePath, topEntryQueue))
+		
+		def queue = topEntryQueue.getTopEntries();
+		def lowest = ((Words)queue.poll()).getText()
+		assertEquals("banana",lowest)
+		lowest = ((Words)queue.poll()).getText()
+		assertEquals("apple",lowest)
+		lowest = ((Words)queue.poll()).getText()
+		assertEquals("cat",lowest)
 	}
 }

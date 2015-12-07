@@ -8,3 +8,4 @@ dog
 cat
 cat
 apple
+cat

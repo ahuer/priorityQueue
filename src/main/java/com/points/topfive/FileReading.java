@@ -22,13 +22,15 @@ public class FileReading {
 		BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(
 				new FileOutputStream(outputFilePath + "file" + fileCount + ".txt"), encoding));
 				
-		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(inputFileName), encoding)) ) {
+		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+				new FileInputStream(inputFileName), encoding)) ) {
 			for (String line; (line = bufferedReader.readLine()) != null; ) {
 				if (line.getBytes(encoding).length + byteCount >= maxBytesPerFile) {
 					bufferedWriter.close();
 					byteCount = 0;
 					fileCount++;
-					bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilePath + "file" + fileCount + ".txt"), encoding));
+					bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+							outputFilePath + "file" + fileCount + ".txt"), encoding));
 				}
 				byteCount += line.getBytes(encoding).length;
 				bufferedWriter.write(line);
@@ -51,7 +53,8 @@ public class FileReading {
 		for (int fileCount = 1; fileCount <= numFiles; fileCount++ ) {
 			ArrayList<String> fileWords = new ArrayList<>();
 			
-			try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath + "/file" + fileCount + ".txt"), encoding)) ) {
+			try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+					new FileInputStream(filePath + "/file" + fileCount + ".txt"), encoding)) ) {
 				for (String line; (line = bufferedReader.readLine()) != null; ) {
 					fileWords.add(line);
 				}
@@ -62,7 +65,8 @@ public class FileReading {
 			MergeSort mergeSort = new MergeSort();
 			mergeSort.sort(fileWords);
 			
-			try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath + "/file" + fileCount + ".txt"), encoding)) ) {
+			try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(filePath + "/file" + fileCount + "-sorted.txt"), encoding)) ) {
 				for (String word : fileWords ) {
 					bufferedWriter.write(word);
 					bufferedWriter.newLine();
@@ -83,7 +87,7 @@ public class FileReading {
 		
 		try {
 			for (int fileCount = 1; fileCount <= numFiles; fileCount++ ) {
-				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath + "/file" + fileCount + ".txt"), encoding));
+				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath + "/file" + fileCount + "-sorted.txt"), encoding));
 				fileReaders.add(bufferedReader);
 			}
 			
@@ -95,14 +99,22 @@ public class FileReading {
 		}
 		
 		String currentWord = "";
-		int currentFreq = 0;
 		String nextWord = "";
-		ArrayList<String> currentPointers = new ArrayList<>();
+		int currentFreq = 0;
+		ArrayList<String> currentFilePointers = new ArrayList<>();
 		
 		try {
 			while (fileReaders.size() > 0 ) {
 				for (int fileNum = 0; fileNum < fileReaders.size(); fileNum++ ) {
-					String nextLine = fileReaders.get(fileNum).readLine();
+					String nextLine = "";
+					
+					if (currentFilePointers.size() < fileReaders.size() ) {
+						nextLine = fileReaders.get(fileNum).readLine();
+					}
+					
+					if (currentFilePointers.size() == fileReaders.size() ) {
+						nextLine = currentFilePointers.get(fileNum);
+					}
 					
 					while (nextLine == currentWord ) {
 						currentFreq++;
@@ -114,14 +126,19 @@ public class FileReading {
 						fileReaders.remove(fileNum);
 					} 
 					
-					currentPointers.add(nextLine);
+					if (currentFilePointers.size() < fileNum + 1 ) {
+						currentFilePointers.add(nextLine);
+					}
+					else {currentFilePointers.set(fileNum, nextLine); }
 				}
 				
-				if (!currentWord.equals("") ) {
+				nextWord = findSmallestWord(currentFilePointers);
+				
+				if (!currentWord.equals("") || !currentWord.equals(nextWord) ) {
 					topEntries.addToTopEntries(new Words(currentWord, currentFreq));
+					currentFreq = 0;
 				}
-				currentWord = currentPointers.get(findSmallestWord(currentPointers));
-				currentFreq = 0;
+				
 			}
 		} catch (IOException ex) {
 			for (BufferedReader br : fileReaders ) {
@@ -132,18 +149,15 @@ public class FileReading {
 		return true;		
 	}
 	
-	private int findSmallestWord(ArrayList<String> wordList) {
+	private static String findSmallestWord(ArrayList<String> wordList) {
 		String smallestWord = wordList.get(0);
-		int smallestIndex = 0;
 		
 		for (int i = 1; i < wordList.size(); i++ ) {
 			if (wordList.get(i).compareTo(smallestWord) < 0 ) {
 				smallestWord = wordList.get(i);
-				smallestIndex = i;
 			}
-		}
-		
-		return smallestIndex;
+		}		
+		return smallestWord;
 	}
 	
 	public void setMaxBytes(int max) {
